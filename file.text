@@ -1,0 +1,39 @@
+import dotenv from "dotenv"
+dotenv.config()
+import { error } from "console"
+// db connection statement
+import {MongoClient} from "mongodb"
+import * as mongoDB from "mongodb"
+let uri:string =getEnv("CLUSTER_STRING")
+let Client:mongoDB.MongoClient= new MongoClient(uri)
+async function ConnectDataBase(){
+Client.connect()
+}
+
+
+
+
+
+
+//additional function to handel typeing
+function getEnv(name:string){
+    if(process.env[name]==undefined) throw error
+ return process.env[name]
+}
+
+
+
+
+
+
+// exporting modules 
+interface ExpotingObject{
+ ConnectDataBase:()=> void,
+ Client:mongoDB.MongoClient
+}
+let serverfunctions:ExpotingObject={
+ "ConnectDataBase":ConnectDataBase,
+ "Client":Client
+
+}
+module.exports=serverfunctions
