@@ -1,2 +1,4 @@
 node_modules/
 errors.txt
+.env
+file.text
