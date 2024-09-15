@@ -1,99 +1,100 @@
-import ServerParameters from "../functions.js";
-import query from "../Aggregations/shopQueury.js";
-import express ,{Response,Router,Request} from "express"
-import { error } from "console";
-import { log } from "util";
-import { ObjectId } from "mongodb";
-
-// ServerParameters
-
+import express from "express"
+import query from "../Aggregations/shopQueury.js"
+import { Response,Request } from "express"
+import ServerParameters from "../functions.js"
+import { after } from "node:test"
+import { ObjectId } from "mongodb"
+// shoprouter
+const shoprouter = express.Router()
+// ServerParameters 
 let {
-restaurants // collection restaurant 
-,isUndifinedObjectId //function that handels the undifined cases of variables
+isUndifinedObjectId,
+restaurants,
 }=ServerParameters
 
-//data varibles
-let RESTAURANTS
 
-const shoprouter:Router = express.Router()
-
+// get all endpoint
 shoprouter.get("/GetAll/",async(req:Request,res:Response)=>{
     try {
-     const GetAllShops = await GetShops(query)
-     if (GetAllShops) {return res.json({message:"sucess",data:GetAllShops})}
-     return res.json({message:"error 1"})
+      const importingShops = await restaurants.aggregate(query).toArray()
+        if(!importingShops){
+            return res.json({"message":"error 1"})
+        }
+    return res.json({"message":"sucess","data":importingShops})
     } catch (error) {
         throw error
     }
-})
-shoprouter.post("/AddShop/",async(req:Request,res:Response)=>{
-    try {
-     let{body}=req
-       let verification=SchemeVerification(body)
-       if(!verification) res.json({"message":"error 2"})
-       const AddingShop = await restaurants.insertOne(body)
-      if(AddingShop) res.json({"message":"sucess"})
-    } catch (error) {
-        throw error
-    }
-})
-shoprouter.get("/deleteShop/",async(req:Request,res:Response)=>{
-    try {
-     let{headers}=req // if you face a probleme with deleting shops verify headers
-     let id=new ObjectId(isUndifinedObjectId(headers._id))
-     const DeleteShop = await restaurants.deleteOne({_id:id})
 
-     if(!DeleteShop) {
-     return res.json({"message":"error 3"})
-    }
-     return res.json({"message":"sucess"})
-    } catch (error) {
-     throw error   
-    }
 })
-shoprouter.post("/UpdateShop/",async(req:Request,res:Response)=>{
- try {
-    let{headers,body}=req
-    let updating ,verified
-    verified= SchemeVerification(body) // this verification need to be changed later in the front  🔥 
-     if(verified){
-        updating= await restaurants.findOneAndUpdate({_id:isUndifinedObjectId(headers._id)},{$set:body},{returnDocument:"after"})
-        if(!updating){return res.json({"message":"error 4"})} 
-        return res.json({"message":"sucess"})
+
+// adding shop 
+shoprouter.post('/addOne/',async(req:Request,res:Response)=>{
+    try {
+        let{body}=req
+        let verification = isSchemeValable(body)      
+      if(!verification){
+        return res.json({"message":"error 2"})
+      }
+      const addShop = await restaurants.insertOne(body)
+     if(!addShop){
+        return res.json({"message":"error 6"})
      }
-     return res.json({"message":"error 2"})
-    
- } catch (error) {
-    throw error
- }
-})
-
-export default shoprouter
-
-
-
-
-
-// function shop query call 
-async function GetShops(Query:object[]){
-    try {
-        RESTAURANTS = await restaurants.aggregate(Query).toArray().catch((error:unknown)=>{throw error})
-        return RESTAURANTS
-    } catch (error:unknown) {
+    return res.json({"message":"sucess"})
+    } catch (error) {
         throw error
     }
+})
+//updating shop 
+shoprouter.post("/updateShop",async(req:Request,res:Response)=>{
+    try {
+    let{headers,body}=req
+    let verification = isSchemeValable(body) // the verification here need to be changed after in front 🔥
     
+    if(!verification){
+        return res.json({"message":"error 2"})
     }
+    let ID = ObjectId.createFromHexString(isUndifinedObjectId(headers._id))
+        const updateShop =await restaurants.findOneAndUpdate({_id:ID},{$set:body},{returnDocument:"after"})
+        if(!updateShop){
+            return res.json({"message":"error 4"})
+        }
+    return res.json({"message":"sucess"})
+    } catch (error) {
+        throw error
+    }
+})
+// delete shop 
+shoprouter.get('/deleteOne/',async(req:Request,res:Response)=>{
+    try {
+        let{headers}=req
+     let ID =ObjectId.createFromHexString(isUndifinedObjectId(headers._id))
 
 
-// function for scheme verification 
-function SchemeVerification(object:object){
-    let array =["username","restaurantname","location","city","start_time"]
-    for (let elem in object){
-     if(!array.includes(elem)){
-      return false 
-     } 
+     const deletingShop = await restaurants.findOneAndDelete({_id:ID})
+     console.log(deletingShop);
+     
+     if(!deletingShop){
+        return res.json({"message":"error 3"})
+     }
+    return res.json({"message":"sucess"})
+    } catch (error) {
+        throw error
     }
-   return true 
+})
+
+
+//function to check if schema is valable 
+
+function isSchemeValable(argument:{[key:string]:any}){
+    let array:Array<string> =["username","restaurantname","location","city","start_time"]
+    for(let elem of array){
+      if(!argument[elem]){ 
+        return false
+      }
+    }
+ return true
 }
 
+
+
+export default shoprouter

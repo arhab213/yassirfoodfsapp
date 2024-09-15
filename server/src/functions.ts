@@ -1,117 +1,98 @@
-import { error } from "console"
 import dotenv from "dotenv"
 dotenv.config()
+import express,{Application,Router,Response,Request} from "express"
 import http from "http"
-import bodyparser from "body-parser"
-import express ,{Router,Response}from "express"
+import bodyParser from "body-parser"
+import { MongoClient ,ObjectId} from "mongodb"
 import * as mongoDB from "mongodb"
-import { MongoClient } from "mongodb"
 import cors from "cors"
+import { error } from "console"
 
-//variables connection dependencies 
-let uri:string = GetElemFromEnv("CLUSTER_STRING")
-let ConnectionState={0:"disconnected to DB",1:"Connected to DB"}
-let Client :mongoDB.MongoClient= new MongoClient(uri)
-// function server setup 
-let app:any
-//typin element of the MappedElments 
-export interface MappedElments {
-    "path":string,
-    "route":Router
-}
-function ServerSetup(argument:Array<MappedElments>){
-app=express()
-http.createServer(app)
-app.use(bodyparser.json({"limit":"50mb"}))
-app.use(cors({"origin":"*"}))
-argument.map((e)=>{return app.use(e.path,e.route)}) //returning routes and their path 
-let PORT = Number(GetElemFromEnv("LOCAL_HOST_PORT")) 
+//the collections and db 
+  //Client Creation and uri
 
-app.listen(PORT,()=>{
-    console.log(`server connected on ${"port " + PORT }`);
-})
+let uri=GetElemFromEnv("CLUSTER_STRING")
+const Client:mongoDB.MongoClient = new MongoClient (uri)
+const db:mongoDB.Db =Client.db("ShopDb")
+let restaurants:mongoDB.Collection=db.collection("restaurant")
+let categories:mongoDB.Collection =db.collection("categories")
+let offers:mongoDB.Collection=db.collection("offers")
 
-}
-
-
-//db and collections varibles
-let db=Client.db("ShopDb")
-let restaurants:mongoDB.Collection= db.collection("restaurant")
-let categories:mongoDB.Collection= db.collection("categories")
-let offers:mongoDB.Collection =db.collection("offers")
-
-
-
-//functions used in main.ts
+//function for etablishing the db connection 
+let ConnectionState={1:"Connected to the db",2:"Disconnected from db"}
 function HandlingConnection(set:boolean){
     if(set){
-        Client.connect().catch(error=>{throw error})
-        console.log(ConnectionState[1]);     // log need to be removed
-        return ConnectionState[1]
+     Client.connect()
+     return console.log(ConnectionState[1])
     }
-
- Client.close().catch(error=>{throw error})
- console.log(ConnectionState[0]);         //log need to be removed
- return ConnectionState[0]
-
+Client.close()
+return console.log(ConnectionState[2])
 }
-
-//handeling undifined function 
-
-function isUndifinedObjectId(argument:any){
-    if(argument==undefined) throw error
-return argument
+//function for seeting up the server
+let app:Application
+interface SetupServerArgument{
+    path:string,
+    route:Router
 }
-
-
-//function for handeling undifined case of vars wihch are imported from .env
-function GetElemFromEnv(name:string){
-    if(process.env[name]==undefined) throw error
-    return process.env[name]
+// function for setting server 
+function ServerSetup(argument:Array<SetupServerArgument>){
+  app=express()
+  http.createServer(app)
+  app.use(bodyParser.json({limit:"50mb"}))
+  app.use(cors({"origin":"*"}))
+  argument.map((e)=>{return app.use(e.path,e.route)})
+  let PORT=GetElemFromEnv("LOCAL_HOST_PORT")
+  app.listen(PORT,()=>{
+    console.log(`Connected to the port ${PORT}`)
+  })
 }
-
-
-// Indexation collections 
+//creating indexes 
 async function IndexesCreation(){
     try {
-        const IndexationOne = await restaurants.createIndex({_id:1})
-        if(!IndexationOne){
-          return console.log({"message":"error 5"});//🔥
-          
-        }
-        const IndexationTwo = await restaurants.createIndex({restaurantname:1})
-        if(!IndexationTwo){
-            return console.log({"message":"error 5"});//🔥
-            
-          }
-    
-     
-    return  console.log("created"); //🔥
+    let IndexOne = await restaurants.createIndex({_id:1})
+    let IndexTwo = await restaurants.createIndex({restaurantname:1})
+    if(!IndexOne || !IndexTwo){
+        throw error({"message":"error 5"})
+    }
     } catch (error) {
         throw error
     }
 }
+// function for handeling undifined cases of an ObjectId
 
-//typing object to send to modules export 
-interface ServerParametersType{
- "HandlingConnection":(set:boolean)=>void,
-   "Client":mongoDB.MongoClient,
-   "restaurants":mongoDB.Collection,
-   "isUndifinedObjectId":(argument:any)=>mongoDB.ObjectId,
-   "ServerSetup":(argument:Array<MappedElments>)=>void,
-   "app":any,
-   "IndexesCreation":()=>void
+function isUndifinedObjectId(argument:any){
+    if(argument ==undefined){
+        throw error
+    }
+return argument
+}
 
+
+// function for .env importing 
+function GetElemFromEnv(argument:string){
+if(process.env[argument] == undefined){
+     throw error
+}
+return process.env[argument]  
+}
+interface ServerParmetersType {
+    "HandlingConnection":(set:boolean)=>void,
+    "SetupServer":(argument:Array<SetupServerArgument>)=>void,
+    "IndexesCreation":()=>void,
+    "restaurants":mongoDB.Collection,
+    "isUndifinedObjectId":(argument:any)=>string
 
 }
-let ServerParameters:ServerParametersType={
-   "HandlingConnection":HandlingConnection,
-    "Client":Client,
-    "restaurants":restaurants,
-    "isUndifinedObjectId":isUndifinedObjectId,
+
+
+
+let ServerParameters ={
+    "HandlingConnection":HandlingConnection,
     "ServerSetup":ServerSetup,
-    "app":app,
-    "IndexesCreation":IndexesCreation
+    "IndexesCreation":IndexesCreation,
+    "restaurants":restaurants,
+    "isUndifinedObjectId":isUndifinedObjectId
 
 }
+
 export default ServerParameters

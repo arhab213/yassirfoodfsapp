@@ -1,10 +1,7 @@
 import ServerParmeters from "./functions.js";
 import shoprouter from "./routes/shoproutes.js";
-function Shoprouter() {
-    return shoprouter;
-}
 //ServerParmeters
-let { HandlingConnection, ServerSetup, IndexesCreation, app } = ServerParmeters;
+let { HandlingConnection, ServerSetup, IndexesCreation, } = ServerParmeters;
 //connecting to db 
 HandlingConnection(true);
 //setting up the server 

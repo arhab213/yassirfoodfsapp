@@ -1,81 +1,76 @@
-import { error } from "console";
 import dotenv from "dotenv";
 dotenv.config();
-import http from "http";
-import bodyparser from "body-parser";
 import express from "express";
+import http from "http";
+import bodyParser from "body-parser";
 import { MongoClient } from "mongodb";
 import cors from "cors";
-//variables connection dependencies 
+import { error } from "console";
+//the collections and db 
+//Client Creation and uri
 let uri = GetElemFromEnv("CLUSTER_STRING");
-let ConnectionState = { 0: "disconnected to DB", 1: "Connected to DB" };
-let Client = new MongoClient(uri);
-// function server setup 
-let app;
-function ServerSetup(argument) {
-    app = express();
-    http.createServer(app);
-    app.use(bodyparser.json({ "limit": "50mb" }));
-    app.use(cors({ "origin": "*" }));
-    argument.map((e) => { return app.use(e.path, e.route); }); //returning routes and their path 
-    let PORT = Number(GetElemFromEnv("LOCAL_HOST_PORT"));
-    app.listen(PORT, () => {
-        console.log(`server connected on ${"port " + PORT}`);
-    });
-}
-//db and collections varibles
-let db = Client.db("ShopDb");
+const Client = new MongoClient(uri);
+const db = Client.db("ShopDb");
 let restaurants = db.collection("restaurant");
 let categories = db.collection("categories");
 let offers = db.collection("offers");
-//functions used in main.ts
+//function for etablishing the db connection 
+let ConnectionState = { 1: "Connected to the db", 2: "Disconnected from db" };
 function HandlingConnection(set) {
     if (set) {
-        Client.connect().catch(error => { throw error; });
-        console.log(ConnectionState[1]); // log need to be removed
-        return ConnectionState[1];
+        Client.connect();
+        return console.log(ConnectionState[1]);
     }
-    Client.close().catch(error => { throw error; });
-    console.log(ConnectionState[0]); //log need to be removed
-    return ConnectionState[0];
+    Client.close();
+    return console.log(ConnectionState[2]);
 }
-//handeling undifined function 
-function isUndifinedObjectId(argument) {
-    if (argument == undefined)
-        throw error;
-    return argument;
+//function for seeting up the server
+let app;
+// function for setting server 
+function ServerSetup(argument) {
+    app = express();
+    http.createServer(app);
+    app.use(bodyParser.json({ limit: "50mb" }));
+    app.use(cors({ "origin": "*" }));
+    argument.map((e) => { return app.use(e.path, e.route); });
+    let PORT = GetElemFromEnv("LOCAL_HOST_PORT");
+    app.listen(PORT, () => {
+        console.log(`Connected to the port ${PORT}`);
+    });
 }
-//function for handeling undifined case of vars wihch are imported from .env
-function GetElemFromEnv(name) {
-    if (process.env[name] == undefined)
-        throw error;
-    return process.env[name];
-}
-// Indexation collections 
+//creating indexes 
 async function IndexesCreation() {
     try {
-        const IndexationOne = await restaurants.createIndex({ _id: 1 });
-        if (!IndexationOne) {
-            return console.log({ "message": "error 5" }); //🔥
+        let IndexOne = await restaurants.createIndex({ _id: 1 });
+        let IndexTwo = await restaurants.createIndex({ restaurantname: 1 });
+        if (!IndexOne || !IndexTwo) {
+            throw error({ "message": "error 5" });
         }
-        const IndexationTwo = await restaurants.createIndex({ restaurantname: 1 });
-        if (!IndexationTwo) {
-            return console.log({ "message": "error 5" }); //🔥
-        }
-        return console.log("created"); //🔥
     }
     catch (error) {
         throw error;
     }
 }
+// function for handeling undifined cases of an ObjectId
+function isUndifinedObjectId(argument) {
+    if (argument == undefined) {
+        throw error;
+    }
+    return argument;
+}
+// function for .env importing 
+function GetElemFromEnv(argument) {
+    if (process.env[argument] == undefined) {
+        throw error;
+    }
+    return process.env[argument];
+}
 let ServerParameters = {
     "HandlingConnection": HandlingConnection,
-    "Client": Client,
-    "restaurants": restaurants,
-    "isUndifinedObjectId": isUndifinedObjectId,
     "ServerSetup": ServerSetup,
-    "app": app,
-    "IndexesCreation": IndexesCreation
+    "IndexesCreation": IndexesCreation,
+    "restaurants": restaurants,
+    "isUndifinedObjectId": isUndifinedObjectId
 };
 export default ServerParameters;
 //# sourceMappingURL=functions.js.map
