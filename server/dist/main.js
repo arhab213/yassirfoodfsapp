@@ -9,14 +9,17 @@ HandlingConnection(true);
 //setting up the server
 //routes and paths
 let RoutesAndPaths = [
+    //shop router
     {
         path: "/shop/",
         route: shoprouter,
     },
+    //public user router
     {
-        path: "/PublicUser/",
+        path: "/public/",
         route: PublicUserRouter,
     },
+    //admin user router
     {
         path: "/admin/",
         route: AdminUserRoute,

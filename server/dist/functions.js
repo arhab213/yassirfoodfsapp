@@ -10,15 +10,19 @@ import { error } from "console";
 import cookieParser from "cookie-parser";
 //the collections and db
 //Client Creation and uri
-let uri = GetElemFromEnv("CLUSTER_STRING");
+let CLUSTER = GetElemFromEnv("CLUSTER_STRING");
+let SERVER = GetElemFromEnv("SERVER_PATH_DB");
+let uri = SERVER ? SERVER : CLUSTER;
 const Client = new MongoClient(uri);
 const db = Client.db("ShopDb");
+//categories /offers :restaurnat collection
 let restaurants = db.collection("restaurant");
 let categories = db.collection("categories");
 let offers = db.collection("offers");
 const UserDB = Client.db("test");
-const Admin_user_collection = UserDB.collection("adminusers");
-const Public_user_collection = UserDB.collection("publicusers");
+//user collections
+const PUBLIC_USER_COLLECTION = UserDB.collection("publicusers");
+const ADMIN_USERS_COLLECTION = UserDB.collection("adminusers");
 //function for etablishing the db connection
 let ConnectionState = { 1: "Connected to the db", 2: "Disconnected from db" };
 function HandlingConnection(set) {
@@ -53,13 +57,14 @@ async function IndexesCreation() {
     try {
         let IndexOne = await restaurants.createIndex({ _id: 1 });
         let IndexTwo = await restaurants.createIndex({ restaurantname: 1 });
-        let IndexThree = await Public_user_collection.createIndex({ email: 1 }, { unique: true });
-        if (!IndexOne || !IndexTwo || !IndexThree) {
-            throw error({ message: "error 5" });
+        let IndexThree = await PUBLIC_USER_COLLECTION.createIndex({ email: 1 }, { unique: true });
+        let IndexFour = await ADMIN_USERS_COLLECTION.createIndex({ email: 1 }, { unique: true });
+        if (!IndexOne || !IndexTwo || !IndexThree || !IndexFour) {
+            return console.log("creation index probleme check please");
         }
     }
     catch (error) {
-        throw error;
+        console.error(error);
     }
 }
 // function for handeling undifined cases of an ObjectId
@@ -71,28 +76,54 @@ function isUndifinedObjectId(argument) {
 }
 // function for .env importing
 function GetElemFromEnv(argument) {
-    if (process.env[argument] == undefined) {
+    try {
+        if (process.env[argument] == undefined) {
+            throw error;
+        }
+        return process.env[argument];
+    }
+    catch (error) {
         throw error;
     }
-    return process.env[argument];
 }
 //function to check if schema is valable
-function isSchemeValable(argument) {
-    let array = [
-        "username",
-        "restaurantname",
-        "location",
-        "city",
-        "start_time",
-    ];
-    for (let elem of array) {
-        if (!argument[elem]) {
+function isRestaurantSchemeValable(argument) {
+    try {
+        let array = [
+            "username",
+            "restaurantname",
+            "location",
+            "city",
+            "start_time",
+        ];
+        for (let elem of array) {
+            if (!argument[elem]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+//function to see if the admin user shem is valid
+function isUserAdminSchemeValid(argument) {
+    try {
+        if (!argument.fullname.firstname ||
+            !argument.fullname.lastname ||
+            !argument.email ||
+            !argument.isAdmin ||
+            !argument.password) {
             return false;
         }
+        return true;
     }
-    return true;
+    catch (error) {
+        console.log(error);
+    }
 }
-//handeling undifined password
+//handeling undifined stirng
 function isUndefinedString(argument) {
     if (argument == undefined) {
         throw error;
@@ -108,27 +139,32 @@ function isUndefinedObject(argument) {
 }
 //verifying the required fields
 function isUserSchemeValid(argument) {
-    let array = ["fullname", "email", "password"];
-    for (let elem of array) {
-        if (!argument[elem]) {
+    try {
+        let array = ["fullname", "email", "password"];
+        if (!argument.fullname.firstname ||
+            !argument.fillname.lastname ||
+            !argument.password ||
+            !argument.email) {
             return false;
         }
+        return true;
     }
-    if (!argument["fullname"].firstname || !argument["fullname"].lastname) {
-        return false;
+    catch (error) {
+        console.log(error);
     }
-    return true;
 }
 let ServerParameters = {
     HandlingConnection: HandlingConnection,
     ServerSetup: ServerSetup,
     IndexesCreation: IndexesCreation,
     restaurants: restaurants,
+    categories: categories,
     isUndifinedObjectId: isUndifinedObjectId,
     isUndefinedString: isUndefinedString,
-    isSchemeValable: isSchemeValable,
+    isRestaurantSchemeValable: isRestaurantSchemeValable,
     isUndefinedObject: isUndefinedObject,
     isUserSchemeValid: isUserSchemeValid,
+    isUserAdminSchemeValid: isUserAdminSchemeValid,
     GetElemFromEnv: GetElemFromEnv,
 };
 export default ServerParameters;

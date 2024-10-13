@@ -4,7 +4,7 @@ import express, { Application, Router, Response, Request } from "express";
 import http from "http";
 import bodyParser from "body-parser";
 import { MongoClient, ObjectId } from "mongodb";
-import mongoose from "mongoose";
+import mongoose, { Collection } from "mongoose";
 import * as mongoDB from "mongodb";
 import cors from "cors";
 import { error } from "console";
@@ -12,17 +12,21 @@ import cookieParser from "cookie-parser";
 
 //the collections and db
 //Client Creation and uri
+let CLUSTER = GetElemFromEnv("CLUSTER_STRING");
+let SERVER = GetElemFromEnv("SERVER_PATH_DB");
 
-let uri = GetElemFromEnv("CLUSTER_STRING");
+let uri = SERVER ? SERVER : CLUSTER;
 const Client: mongoDB.MongoClient = new MongoClient(uri);
 const db: mongoDB.Db = Client.db("ShopDb");
+
+//categories /offers :restaurnat collection
 let restaurants: mongoDB.Collection = db.collection("restaurant");
 let categories: mongoDB.Collection = db.collection("categories");
 let offers: mongoDB.Collection = db.collection("offers");
 const UserDB: mongoDB.Db = Client.db("test");
-const Admin_user_collection = UserDB.collection("adminusers");
-const Public_user_collection = UserDB.collection("publicusers");
-
+//user collections
+const PUBLIC_USER_COLLECTION = UserDB.collection("publicusers");
+const ADMIN_USERS_COLLECTION = UserDB.collection("adminusers");
 //function for etablishing the db connection
 let ConnectionState = { 1: "Connected to the db", 2: "Disconnected from db" };
 function HandlingConnection(set: boolean) {
@@ -56,21 +60,26 @@ function ServerSetup(argument: Array<SetupServerArgument>) {
     console.log(`Connected to the port ${PORT}`);
   });
 }
+
 //creating indexes
 async function IndexesCreation() {
   try {
     let IndexOne = await restaurants.createIndex({ _id: 1 });
     let IndexTwo = await restaurants.createIndex({ restaurantname: 1 });
-    let IndexThree = await Public_user_collection.createIndex(
+    let IndexThree = await PUBLIC_USER_COLLECTION.createIndex(
+      { email: 1 },
+      { unique: true }
+    );
+    let IndexFour = await ADMIN_USERS_COLLECTION.createIndex(
       { email: 1 },
       { unique: true }
     );
 
-    if (!IndexOne || !IndexTwo || !IndexThree) {
-      throw error({ message: "error 5" });
+    if (!IndexOne || !IndexTwo || !IndexThree || !IndexFour) {
+      return console.log("creation index probleme check please");
     }
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 }
 // function for handeling undifined cases of an ObjectId
@@ -84,31 +93,55 @@ function isUndifinedObjectId(argument: any) {
 
 // function for .env importing
 function GetElemFromEnv(argument: string) {
-  if (process.env[argument] == undefined) {
+  try {
+    if (process.env[argument] == undefined) {
+      throw error;
+    }
+    return process.env[argument];
+  } catch (error) {
     throw error;
   }
-  return process.env[argument];
 }
 //function to check if schema is valable
 
-function isSchemeValable(argument: { [key: string]: any }) {
-  let array: Array<string> = [
-    "username",
-    "restaurantname",
-    "location",
-    "city",
-    "start_time",
-  ];
-  for (let elem of array) {
-    if (!argument[elem]) {
+function isRestaurantSchemeValable(argument: { [key: string]: any }) {
+  try {
+    let array: Array<string> = [
+      "username",
+      "restaurantname",
+      "location",
+      "city",
+      "start_time",
+    ];
+    for (let elem of array) {
+      if (!argument[elem]) {
+        return false;
+      }
+    }
+    return true;
+  } catch (error) {
+    console.log(error);
+  }
+}
+//function to see if the admin user shem is valid
+
+function isUserAdminSchemeValid(argument: { [key: string]: any }) {
+  try {
+    if (
+      !argument.fullname.firstname ||
+      !argument.fullname.lastname ||
+      !argument.email ||
+      !argument.isAdmin ||
+      !argument.password
+    ) {
       return false;
     }
+    return true;
+  } catch (error) {
+    console.log(error);
   }
-  return true;
 }
-
-//handeling undifined password
-
+//handeling undifined stirng
 function isUndefinedString(argument: string) {
   if (argument == undefined) {
     throw error;
@@ -128,16 +161,21 @@ function isUndefinedObject(argument: object) {
 //verifying the required fields
 
 function isUserSchemeValid(argument: { [key: string]: any }) {
-  let array = ["fullname", "email", "password"];
-  for (let elem of array) {
-    if (!argument[elem]) {
+  try {
+    let array = ["fullname", "email", "password"];
+
+    if (
+      !argument.fullname.firstname ||
+      !argument.fillname.lastname ||
+      !argument.password ||
+      !argument.email
+    ) {
       return false;
     }
+    return true;
+  } catch (error) {
+    console.log(error);
   }
-  if (!argument["fullname"].firstname || !argument["fullname"].lastname) {
-    return false;
-  }
-  return true;
 }
 //verifying object receved in the login endpoint
 
@@ -146,11 +184,17 @@ interface ServerParmetersType {
   ServerSetup: (argument: Array<SetupServerArgument>) => void;
   IndexesCreation: () => void;
   restaurants: mongoDB.Collection;
+  categories: mongoDB.Collection;
   isUndifinedObjectId: (argument: any) => string;
   isUndefinedString: (argument: any) => string;
-  isSchemeValable: (argument: { [key: string]: any }) => boolean;
+  isRestaurantSchemeValable: (argument: {
+    [key: string]: any;
+  }) => boolean | undefined;
   isUndefinedObject: (argument: object) => object;
-  isUserSchemeValid: (argument: { [key: string]: any }) => boolean;
+  isUserSchemeValid: (argument: { [key: string]: any }) => boolean | undefined;
+  isUserAdminSchemeValid: (argument: {
+    [key: string]: any;
+  }) => boolean | undefined;
   GetElemFromEnv: (argument: string) => string;
 }
 
@@ -159,11 +203,13 @@ let ServerParameters: ServerParmetersType = {
   ServerSetup: ServerSetup,
   IndexesCreation: IndexesCreation,
   restaurants: restaurants,
+  categories: categories,
   isUndifinedObjectId: isUndifinedObjectId,
   isUndefinedString: isUndefinedString,
-  isSchemeValable: isSchemeValable,
+  isRestaurantSchemeValable: isRestaurantSchemeValable,
   isUndefinedObject: isUndefinedObject,
   isUserSchemeValid: isUserSchemeValid,
+  isUserAdminSchemeValid: isUserAdminSchemeValid,
   GetElemFromEnv: GetElemFromEnv,
 };
 

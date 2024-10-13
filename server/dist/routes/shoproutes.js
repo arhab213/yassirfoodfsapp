@@ -1,19 +1,26 @@
 import express from "express";
-let { isUndifinedObjectId, restaurants, isSchemeValable } = ServerParameters;
+let { isUndifinedObjectId } = ServerParameters;
 import ServerParameters from "../functions.js";
-import { addshop, update, deleteshop, GetAllShops, GetUnique, } from "../controllers/ShopController.js";
+import { addshop, update, deleteshop, GetAllShops, GetUnique, GetCategories, } from "../controllers/ShopController.js";
+import { auth } from "../middleware/auth.js";
 import { AdminAuth } from "../middleware/authAdmin.js";
 // shoprouter
 const shoprouter = express.Router();
 // get all shops
-shoprouter.get("/GetAll/", GetAllShops);
-// get unique shop
-shoprouter.get("/GetUnique/:id", AdminAuth, GetUnique);
+shoprouter.get("/shops", GetAllShops);
+// get unique shop for public user
+shoprouter.get("/shopP/:id", auth, GetUnique);
+// get unique shop for admin user
+shoprouter.get("/shopA/:id", AdminAuth, GetUnique);
+//get categories of the shop for public user
+shoprouter.get("/shopP/categories/:id", auth, GetCategories);
+//get categories of the shop for admin user
+shoprouter.get("/shopA/categories/:id", AdminAuth, GetCategories);
 // adding shop
-shoprouter.post("/addOne/", AdminAuth, addshop);
+shoprouter.post("/new/", AdminAuth, addshop);
 //updating shop
-shoprouter.post("/updateShop/:id", AdminAuth, update);
+shoprouter.post("/update/:id", AdminAuth, update);
 // delete shop
-shoprouter.get("/deleteOne/:id", AdminAuth, deleteshop);
+shoprouter.get("/delete/:id", AdminAuth, deleteshop);
 export default shoprouter;
 //# sourceMappingURL=shoproutes.js.map

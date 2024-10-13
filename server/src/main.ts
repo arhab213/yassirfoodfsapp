@@ -4,7 +4,6 @@ import ServerParmeters from "./functions.js";
 import { Router } from "express";
 import shoprouter from "./routes/shoproutes.js";
 import PublicUserRouter from "./routes/PublicUserRoutes.js";
-import { pathToFileURL } from "url";
 import { AdminUserRoute } from "./routes/AdminUserRoutes.js";
 
 //ServerParmeters
@@ -15,14 +14,17 @@ HandlingConnection(true);
 
 //routes and paths
 let RoutesAndPaths = [
+  //shop router
   {
     path: "/shop/",
     route: shoprouter,
   },
+  //public user router
   {
-    path: "/PublicUser/",
+    path: "/public/",
     route: PublicUserRouter,
   },
+  //admin user router
   {
     path: "/admin/",
     route: AdminUserRoute,

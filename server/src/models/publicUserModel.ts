@@ -32,6 +32,7 @@ const PublicUser = new Schema<PublicUserType>({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   phone: {
     type: String,

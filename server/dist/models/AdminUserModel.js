@@ -17,19 +17,13 @@ const AdminUser = new Schema({
     email: {
         type: String,
         required: true,
+        unique: true,
     },
     image: {
         type: String,
     },
     shops: {
         type: [String],
-        required: true,
-        validate: {
-            //accept only arrays with length which are sup of one
-            validator: function (value) {
-                return value.length >= 1;
-            },
-        },
     },
     isAdmin: {
         required: true,
@@ -43,12 +37,12 @@ const AdminUser = new Schema({
 });
 AdminUser.pre("save", async function (next) {
     try {
-        if (!this.isModified("password")) {
-            next();
+        if (this.isModified("password")) {
+            const saltvalue = await bcrypt.genSalt(8);
+            const HashedPassword = await bcrypt.hash(this.password, saltvalue);
+            this.password = HashedPassword;
         }
-        const saltvalue = await bcrypt.genSalt(8);
-        const HashedPassword = await bcrypt.hash(this.password, saltvalue);
-        this.password = HashedPassword;
+        next();
     }
     catch (error) {
         next(error);

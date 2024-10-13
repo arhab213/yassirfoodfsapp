@@ -2,7 +2,7 @@ import query from "../Aggregations/shopQueury.js";
 import ServerParameters from "../functions.js";
 import { ObjectId } from "mongodb";
 // ServerParameters
-let { isUndifinedObjectId, restaurants, isSchemeValable } = ServerParameters;
+let { isUndifinedObjectId, restaurants, isRestaurantSchemeValable, isUndefinedString, categories, } = ServerParameters;
 // get all shops
 export async function GetAllShops(req, res) {
     try {
@@ -16,12 +16,12 @@ export async function GetAllShops(req, res) {
         throw error;
     }
 }
-export async function GetUnique(req, res, next) {
+//get unique shop
+export async function GetUnique(req, res) {
     try {
-        let { params } = req;
-        let { id } = params;
-        let ID = ObjectId.createFromHexString(isUndifinedObjectId(id));
-        const FindOne = await restaurants.findOne({ _id: ID });
+        let { params, headers } = req;
+        const id = params.id;
+        const FindOne = await restaurants.findOne({ _id: id });
         if (!FindOne) {
             return res.json({ message: "error 17" });
         }
@@ -35,7 +35,7 @@ export async function GetUnique(req, res, next) {
 export async function addshop(req, res) {
     try {
         let { body } = req;
-        let verification = isSchemeValable(body);
+        let verification = isRestaurantSchemeValable(body);
         if (!verification) {
             return res.json({ message: "error 2" });
         }
@@ -54,13 +54,12 @@ export async function update(req, res) {
     try {
         let { params, body } = req;
         let { id } = params;
-        let verification = isSchemeValable(body); // the verification here need to be changed after in front 🔥
+        let verification = isRestaurantSchemeValable(body); // the verification here need to be changed after in front 🔥
         if (!verification) {
             return res.json({ message: "error 2" });
         }
         let ID = ObjectId.createFromHexString(isUndifinedObjectId(id));
-        const updateShop = await restaurants.updateOne({ _id: ID }, { $set: body } //66f95fb843934fd585a60662
-        );
+        const updateShop = await restaurants.updateOne({ _id: ID }, { $set: body });
         if (!updateShop) {
             return res.json({ message: "error 4" });
         }
@@ -81,6 +80,20 @@ export async function deleteshop(req, res) {
             return res.json({ message: "error 3" });
         }
         return res.json({ message: "sucess" });
+    }
+    catch (error) {
+        throw error;
+    }
+}
+export async function GetCategories(req, res) {
+    try {
+        let { params } = req;
+        let { id } = params;
+        const GetCategories = await categories.findOne({ restaurant: id });
+        if (!GetCategories) {
+            return res.json({ message: "error" });
+        }
+        return res.json({ message: "success", data: GetCategories });
     }
     catch (error) {
         throw error;

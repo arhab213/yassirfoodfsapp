@@ -1,21 +1,45 @@
 import { AdminUserModel } from "../models/AdminUserModel.js";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import ServerParameters from "../functions.js";
 import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { error, log } from "console";
+import { ReturnDocument } from "mongodb";
+
 // server parameters
-let { isUserSchemeValid, GetElemFromEnv, isUndefinedString } = ServerParameters;
+let { GetElemFromEnv, isUndefinedString, isUserAdminSchemeValid } =
+  ServerParameters;
 // get unique admin user
 export async function GetAdminUser(req: Request, res: Response) {
   try {
     let { headers } = req;
-    const GettingAdminUser = await AdminUserModel.findById({
-      _id: headers._id,
-    });
+    //verifying token
+
+    let token = isUndefinedString(headers.token);
+    let Cleartoken = await JWT.verify(
+      token,
+      GetElemFromEnv("ADMIN_TOKEN_SECRET")
+    );
+
+    //redirecting to login if there is any probleme with the token
+    if (!token) {
+      return res.json({ message: "error 16" });
+    }
+
+    const GettingAdminUser = await AdminUserModel.findById(Cleartoken);
+
     if (!GettingAdminUser) {
       return res.json({ message: "error 7" });
     }
-    return res.json({ message: "sucess", data: GettingAdminUser });
+    //importing only the important infos
+    const SendingObject = {
+      firstname: GettingAdminUser.fullname.firstname,
+      lastname: GettingAdminUser.fullname.lastname,
+      email: GettingAdminUser.email,
+      shops: GettingAdminUser.shops,
+      isAdmin: GettingAdminUser.isAdmin,
+    };
+    return res.json({ message: "sucess", data: SendingObject });
   } catch (error) {
     throw error;
   }
@@ -25,14 +49,23 @@ export async function GetAdminUser(req: Request, res: Response) {
 export async function AddAdminUser(req: Request, res: Response) {
   try {
     let { body } = req;
-    let verfication = isUserSchemeValid(body);
+
+    let verfication = isUserAdminSchemeValid(body);
     if (!verfication) {
       return res.json({ message: "error 9" });
     }
+    const VerifyIfExist = await AdminUserModel.findOne({ email: body.email });
+    //verifying if the user exist to avoid server crashing du to indexations
+    if (VerifyIfExist) {
+      return res.json({ message: "error 16" });
+    }
+
     const AddingUser = await AdminUserModel.create(body);
+
     if (!AddingUser) {
       return res.json({ message: "error 8" });
     }
+
     return res.json({ message: "success" });
   } catch (error) {
     throw error;
@@ -42,17 +75,36 @@ export async function AddAdminUser(req: Request, res: Response) {
 
 export async function UpdateAdminUser(req: Request, res: Response) {
   try {
-    let { body, params } = req;
-    let verfication = isUserSchemeValid(body);
+    let { body, headers } = req;
+    let verfication = isUserAdminSchemeValid(body);
     if (!verfication) {
       return res.json({ message: "error 9" });
     }
-    const UpdateUser = await AdminUserModel.findOneAndDelete(
-      { _id: params._id },
-      body
+    //verifying token
+    let token = isUndefinedString(headers.token);
+    let Cleartoken = await JWT.verify(
+      isUndefinedString(token),
+      GetElemFromEnv("ADMIN_TOKEN_SECRET")
     );
+
+    const UpdateUser = await AdminUserModel.findOneAndUpdate(
+      { _id: Cleartoken },
+      { $set: body },
+      { new: true, runValidators: true }
+    );
+
     if (!UpdateUser) {
       return res.json({ message: "error 10" });
+    }
+    //updating the password hash
+    const user = await AdminUserModel.findById(Cleartoken);
+    if (user) {
+      const saltvalue = await bcrypt.genSalt(8);
+      const HashedPassword = await bcrypt.hash(body.password, saltvalue);
+      user.password = HashedPassword;
+      user.save();
+    } else {
+      return res.json({ message: "error 7" });
     }
     return res.json({ message: "success" });
   } catch (error) {
@@ -63,9 +115,15 @@ export async function UpdateAdminUser(req: Request, res: Response) {
 // delete admin user
 export async function DeleteAdminUser(req: Request, res: Response) {
   try {
-    let { params } = req;
+    let { headers } = req;
+    let { token } = headers;
+    let Cleartoken = await JWT.verify(
+      isUndefinedString(token),
+      GetElemFromEnv("ADMIN_TOKEN_SECRET")
+    );
+
     const DeletingAdminUser = await AdminUserModel.findOneAndDelete({
-      _id: params._id,
+      _id: Cleartoken,
     });
     if (!DeleteAdminUser) {
       return res.json({ message: "error 11" });
@@ -80,6 +138,7 @@ export async function Login(req: Request, res: Response) {
   try {
     let { headers, body } = req;
     const FindUser = await AdminUserModel.findOne({ email: body.email });
+
     if (!FindUser) {
       return res.json({ message: "error 7" });
     }
@@ -87,11 +146,12 @@ export async function Login(req: Request, res: Response) {
     if (!VerifyingPassword) {
       return res.json({ message: "error 12" });
     }
+
     // generating acess token for admin users
     const AccessToken = await JWT.sign(
       { _id: FindUser._id },
       GetElemFromEnv("ADMIN_TOKEN_SECRET"),
-      { expiresIn: "2m" }
+      { expiresIn: "2h" }
     );
     // generating refresh token for admin users
     const RefreshToken = await JWT.sign(
@@ -114,3 +174,5 @@ export async function Login(req: Request, res: Response) {
     throw error;
   }
 }
+
+//in this controllers the response will in the shape of : {"message":"---","data":"---"} / {"message":"sucess"} / {"message":"error --"} / {"message":"sucess",token:-----}

@@ -6,9 +6,11 @@ import {
   GetPublicUser,
   AddUser,
 } from "../controllers/PublicUserController.js";
+import { auth } from "../middleware/auth.js";
 const PublicUserRouter = express.Router();
-PublicUserRouter.post("/addOne/", AddUser);
-PublicUserRouter.get("/Delete/:id", deleteUser);
-PublicUserRouter.post("/Update/", UpdateUser);
-PublicUserRouter.post("/Login/", Login);
+PublicUserRouter.get("/one", auth, GetPublicUser);
+PublicUserRouter.post("/new", AddUser);
+PublicUserRouter.get("/delete", auth, deleteUser);
+PublicUserRouter.post("/update", auth, UpdateUser);
+PublicUserRouter.post("/login/", Login);
 export default PublicUserRouter;

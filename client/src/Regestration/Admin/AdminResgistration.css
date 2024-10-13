@@ -1,0 +1,208 @@
+:root{
+    --big-title-color: #380150;
+    --small-text-color:#FA2475;
+    --border-color--inactif:grey;
+
+}
+
+#container{
+   
+    padding-top: 7%;
+    background: url("../../../images/background.jpg") no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+
+    
+}
+.parent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1000px;
+    margin:auto;
+    border-radius:2rem;
+    padding: 3rem 6rem;
+    box-shadow: 0px 10px 42px -3px rgba(0,0,0,0.1);
+  margin-top: 5%;
+    z-index: 2;
+    background-color: white;
+}
+.left-section{
+display: flex;
+padding:0 0 0 5%;
+}
+.right-section{
+  height: 500px;
+}
+.left-part-image{
+height:400px;
+margin-left:-25%;
+}
+.big-title{
+    margin:0 0 0 35px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size:1.9rem;
+    display: inline-block;
+    color: var(--big-title-color);
+
+}
+.Form{
+    display: grid;
+    grid-template-rows: 25% 35% 20%;
+    margin: 0 0 0 10%;
+}
+.Form>.top-part>input{
+    width:190px;
+    height:40px;
+    outline: none;
+    border: 0.01px solid var(--border-color--inactif);
+    opacity:0.5;
+    padding: 10px 5px;
+    margin:  0;
+    border-radius:0.5rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal
+ 
+}
+.top-part{
+    display: flex;
+    align-items: center;
+    gap:4%;
+   
+}
+.Form>.top-part>input:hover{
+  
+    outline: none;
+    border: 0.01px solid var(--big-title-color);
+    padding:10px 5px;
+    opacity:0.5;
+    border-radius:0.5rem;
+
+}
+
+.Form>.middle-part{
+    display: grid;
+    grid-gap:15px;
+    grid-template-rows: repeat(2,1fr);
+
+    padding:5px;
+
+    
+}
+.Form>.middle-part>input,.Form>.middle-part>.date-of-birth{
+    grid-template-rows: repeat(2,1fr);
+    height:40px;
+    width:400px;
+    padding: 5px;
+    margin-bottom:1%;
+    outline:none;
+    opacity:0.5;
+    border: 0.01px solid var(--border-color--inactif);
+    border-radius:0.5rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal
+}
+.Form>.middle-part>input:hover{
+    outline: none;
+    border: 0.01px solid var(--big-title-color);
+    opacity:0.5;
+    border-radius:0.5rem;
+}
+.middle-part{
+    margin-top:-15px;
+    margin-left:-5px;
+   
+}
+.bottom-part>button:hover,.other-options-registration-container>button:hover{
+opacity: 0.5;
+transition:0.2s
+}
+
+.submit-button{
+    background-color: var(--big-title-color);
+    color: white;
+      font-family: "Poppins", serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size:1rem;
+  padding:7px 70px;
+  border-radius:0.5rem;
+ margin: 5px 0 10px 26%;
+}
+
+.or-register-with-container{
+    margin:1% 0 2% -3%;
+    display: flex;
+    align-items: center;
+    gap:5%;
+    margin-right:-20%;
+   
+
+}
+.left-line,.right-line{
+    height:0.5px;
+    width:30%;
+    background-color: var(--big-title-color);
+}
+.or-register-with{
+color: var(--big-title-color);
+font-family: "Poppins", serif;
+font-weight: 500;
+font-style: normal;
+font-size: 0.7rem;
+
+}
+.other-options-registration-container{
+    display: flex;
+    justify-content: center;
+    gap:1%;
+
+}
+.register-with-google,.register-with-apple{
+    background-color: var(--big-title-color);
+    color: white;
+      font-family: "Poppins", serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size:1rem;
+  padding:7px 10px;
+  border-radius:0.5rem;
+  width:40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:5%;
+ 
+
+}
+
+.register-options{
+    color:var(--big-title-color) ;
+    display: flex;
+    gap:10px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    font-family: "Poppins", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size:0.8rem;
+}
+.register-option-link{
+    transition: 0.3s;
+}
+.register-options>.register-option-link:hover{
+    text-decoration-line: underline;
+    
+  
+}
+.policy-and-terms-container{
+margin-top: 30px;
+}
+
+
