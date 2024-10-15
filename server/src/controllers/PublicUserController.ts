@@ -37,7 +37,6 @@ export async function GetPublicUser(req: Request, res: Response) {
 export async function AddUser(req: Request, res: Response) {
   try {
     let { body } = req;
-
     let verfication = isUserSchemeValid(body);
     if (!verfication) {
       return res.json({ message: "error 9" });
@@ -51,7 +50,30 @@ export async function AddUser(req: Request, res: Response) {
     if (!AddingUser) {
       return res.json({ message: "error 8" });
     }
-    return res.json({ message: "success" });
+    //creating user
+    const CreateToken = await JWT.sign(
+      { _id: AddingUser._id },
+      GetElemFromEnv("TOKEN_SECRET"),
+      {
+        expiresIn: "5d",
+      }
+    );
+    const RefreshToken = await JWT.sign(
+      { _id: AddingUser._id },
+      GetElemFromEnv("REFRESHED_TOKEN_SECERET"),
+      { expiresIn: "123d" }
+    );
+
+    if (!CreateToken || !RefreshToken) {
+      return res.json({ message: "error 13" });
+    }
+    //reteurning the refreshed token and putting it in the cookies
+    res.cookie("RefreshToken", RefreshToken, {
+      httpOnly: true,
+      sameSite: "strict",
+    });
+    //reterning the acess token
+    return res.json({ messgae: "sucess", token: CreateToken });
   } catch (error) {
     throw error;
   }
@@ -71,17 +93,19 @@ export async function UpdateUser(req: Request, res: Response) {
     if (!verification) {
       return res.json({ message: "error 9" });
     }
-    const UpdatingUser = await PublicUserModel.findOneAndUpdate(
-      { _id: Cleartoken },
-      body
-    );
-    if (!UpdatingUser) {
-      return res.json({ message: "error 10" });
-    }
     const user = await PublicUserModel.findById(Cleartoken);
     if (!user) {
       return res.json({ message: "error 7" });
     }
+    //forced to use this way because of indexation problems
+    const ifEmailExist = await PublicUserModel.findOne({ email: body.email });
+    if (ifEmailExist && ifEmailExist._id?.toString() != user._id?.toString()) {
+      return res.json({ message: "error 18" });
+    }
+    user.fullname.firstname = body.fullname.firstname;
+    user.fullname.lastname = body.fullname.lastname;
+    user.email = body.email;
+    body.phone ? (user.phone = body.phone) : null;
     const saltvalue = await bcrypt.genSalt(8);
     const hashedPassword = await bcrypt.hash(user.password, saltvalue);
     user.password = hashedPassword;
@@ -164,6 +188,17 @@ export async function Login(req: Request, res: Response) {
     throw error;
   }
 }
+
+// {
+//   "fullname":{
+//      "firstname":"arhab",
+//      "lastname":"Mohamed Riad"
+
+//   },
+//   "email":"riadb942@gmail.com",
+//   "password":"Arhab »
+
+// }
 
 // {
 //   "fullname":{

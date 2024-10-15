@@ -5,7 +5,6 @@ import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { error, log } from "console";
 import { ReturnDocument } from "mongodb";
-
 // server parameters
 let { GetElemFromEnv, isUndefinedString, isUserAdminSchemeValid } =
   ServerParameters;
@@ -65,8 +64,29 @@ export async function AddAdminUser(req: Request, res: Response) {
     if (!AddingUser) {
       return res.json({ message: "error 8" });
     }
-
-    return res.json({ message: "success" });
+    // generating acess token for admin users
+    const AccessToken = await JWT.sign(
+      { _id: AddingUser._id },
+      GetElemFromEnv("ADMIN_TOKEN_SECRET"),
+      { expiresIn: "2h" }
+    );
+    // generating refresh token for admin users
+    const RefreshToken = await JWT.sign(
+      { _id: AddingUser._id },
+      GetElemFromEnv("REFRESHED_ADMIN_TOKEN_SECRET"),
+      { expiresIn: "1d" }
+    );
+    //verfying if the tokens was created
+    if (!RefreshToken || !AccessToken) {
+      return res.json({ message: "error 13" });
+    }
+    // setting up refreshed token in the site as cookie
+    res.cookie("AdminRefreshToken", RefreshToken, {
+      httpOnly: true,
+      sameSite: "strict",
+    });
+    //setting up acessToken in the request headers
+    return res.json({ message: "sucess", token: AccessToken });
   } catch (error) {
     throw error;
   }
