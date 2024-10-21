@@ -148,7 +148,7 @@ export async function Login(req: Request, res: Response) {
       return res.json({ message: "error 12" });
     }
 
-    const CheckIfPasswordValid = bcrypt.compare(
+    const CheckIfPasswordValid = await bcrypt.compare(
       ExestingUser.password,
       body.password
     );

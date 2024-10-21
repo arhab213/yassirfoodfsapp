@@ -142,7 +142,7 @@ function isUserSchemeValid(argument) {
     try {
         let array = ["fullname", "email", "password"];
         if (!argument.fullname.firstname ||
-            !argument.fillname.lastname ||
+            !argument.fullname.lastname ||
             !argument.password ||
             !argument.email) {
             return false;

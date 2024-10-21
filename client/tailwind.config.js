@@ -1,3 +1,5 @@
+
+
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ["class"],
@@ -53,7 +55,9 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			},
-			writingcolor:"var(--big-title-color)"
+			writingcolor:"var(--big-title-color)",
+			greens:"text-green-500",
+			errorRed:""
   		}
   	}
   },

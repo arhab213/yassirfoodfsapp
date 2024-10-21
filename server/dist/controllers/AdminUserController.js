@@ -37,6 +37,7 @@ export async function GetAdminUser(req, res) {
 export async function AddAdminUser(req, res) {
     try {
         let { body } = req;
+        body.isAdmin = true;
         let verfication = isUserAdminSchemeValid(body);
         if (!verfication) {
             return res.json({ message: "error 9" });
@@ -50,7 +51,21 @@ export async function AddAdminUser(req, res) {
         if (!AddingUser) {
             return res.json({ message: "error 8" });
         }
-        return res.json({ message: "success" });
+        // generating acess token for admin users
+        const AccessToken = await JWT.sign({ _id: AddingUser._id }, GetElemFromEnv("ADMIN_TOKEN_SECRET"), { expiresIn: "2h" });
+        // generating refresh token for admin users
+        const RefreshToken = await JWT.sign({ _id: AddingUser._id }, GetElemFromEnv("REFRESHED_ADMIN_TOKEN_SECRET"), { expiresIn: "1d" });
+        //verfying if the tokens was created
+        if (!RefreshToken || !AccessToken) {
+            return res.json({ message: "error 13" });
+        }
+        // setting up refreshed token in the site as cookie
+        res.cookie("AdminRefreshToken", RefreshToken, {
+            httpOnly: true,
+            sameSite: "strict",
+        });
+        //setting up acessToken in the request headers
+        return res.json({ message: "sucess", token: AccessToken });
     }
     catch (error) {
         throw error;
@@ -114,7 +129,7 @@ export async function Login(req, res) {
         if (!FindUser) {
             return res.json({ message: "error 7" });
         }
-        const VerifyingPassword = bcrypt.compare(FindUser.password, body.password);
+        const VerifyingPassword = await bcrypt.compare(body.password, FindUser.password);
         if (!VerifyingPassword) {
             return res.json({ message: "error 12" });
         }

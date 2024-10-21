@@ -239,4 +239,39 @@ font-size: 0.7rem;
 }
 
 
+.visibleError{
+    width: 20%;
+    position: absolute;
+    z-index: 3;
+    top:22%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+}
+.hiddenError{
+    opacity: 0;
+    position: absolute;
+    top:10%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+    width: 20%;
+    z-index: 3;
 
+}
+.visibleSuccess{
+    width: 20%;
+    position: absolute;
+    z-index: 3;
+    top:22%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+}
+.hiddenSuccess{
+    opacity: 0;
+    position: absolute;
+    top:10%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+    width: 20%;
+    z-index: 3;
+
+}

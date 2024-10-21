@@ -1,9 +1,15 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import "./AdminResgistration.css";
-import { useState } from "react";
+import Exporting from "@/CONFIG";
+import { useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useContexts } from "@/Context/context";
+import AlertError from "@/element/AlertError/AlertError";
+import AlertSuccess from "@/element/AlertSuccess/AlertSuccess";
 
+let { Errors } = Exporting;
 function AdminRegistration() {
+  //defining setters of errors and success messages
   interface FormType {
     fullname: {
       firstname: string;
@@ -14,10 +20,30 @@ function AdminRegistration() {
     password: string;
   }
 
+  let { post, SetIsError, SetIsSuccess, isError, isSuccess, StoreToken } =
+    useContexts();
   const { handleSubmit, register } = useForm<FormType>();
-
-  const OnSubmit: SubmitHandler<FormType> = (data) => {
-    console.log(data);
+  useEffect(() => {
+    if (isError && isError != "") {
+      setTimeout(() => {
+        SetIsError("");
+      }, 3000);
+    }
+    if (isSuccess && isSuccess != "") {
+      setTimeout(() => {
+        SetIsSuccess("");
+      }, 3000);
+    }
+  }, [isError, isSuccess]);
+  const OnSubmit: SubmitHandler<FormType> = async (data) => {
+    const res = await post(data, "register-admin");
+    if (res && typeof res != "string" && res.message && !res.token) {
+      SetIsError(Errors[`${res.message}`]);
+    }
+    if (res && typeof res != "string" && res.message && res.token) {
+      StoreToken(res.token);
+      SetIsSuccess(res.message);
+    }
   };
 
   return (
@@ -122,7 +148,7 @@ function AdminRegistration() {
                   <span className="register-option-text">
                     You already have an account?{" "}
                   </span>
-                  <a className="register-option-link" href="/admin/logiin">
+                  <a className="register-option-link" href="/admin/login">
                     So Login
                   </a>
                 </div>
@@ -130,6 +156,27 @@ function AdminRegistration() {
             </div>
           </form>
         </div>
+      </div>
+      <div className="satatus-handling-container">
+        {isError && isError != "" ? (
+          <div className="Error-handling visibleError">
+            <AlertError message={isError} />
+          </div>
+        ) : (
+          <div className="Error-handling hiddenError">
+            <AlertError message={isError} />
+          </div>
+        )}
+
+        {isSuccess && isSuccess != "" ? (
+          <div className="Succes-handeling visibleSuccess">
+            <AlertSuccess message={isSuccess} />
+          </div>
+        ) : (
+          <div className="Succes-handeling hiddenSuccess">
+            <AlertSuccess message="" />
+          </div>
+        )}
       </div>
     </div>
   );

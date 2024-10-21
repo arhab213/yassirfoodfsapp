@@ -48,7 +48,7 @@ export async function GetAdminUser(req: Request, res: Response) {
 export async function AddAdminUser(req: Request, res: Response) {
   try {
     let { body } = req;
-
+    body.isAdmin = true;
     let verfication = isUserAdminSchemeValid(body);
     if (!verfication) {
       return res.json({ message: "error 9" });
@@ -162,7 +162,11 @@ export async function Login(req: Request, res: Response) {
     if (!FindUser) {
       return res.json({ message: "error 7" });
     }
-    const VerifyingPassword = bcrypt.compare(FindUser.password, body.password);
+
+    const VerifyingPassword = await bcrypt.compare(
+      body.password,
+      FindUser.password
+    );
     if (!VerifyingPassword) {
       return res.json({ message: "error 12" });
     }

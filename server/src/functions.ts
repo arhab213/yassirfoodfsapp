@@ -166,7 +166,7 @@ function isUserSchemeValid(argument: { [key: string]: any }) {
 
     if (
       !argument.fullname.firstname ||
-      !argument.fillname.lastname ||
+      !argument.fullname.lastname ||
       !argument.password ||
       !argument.email
     ) {

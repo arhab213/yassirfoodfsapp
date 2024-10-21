@@ -27,6 +27,7 @@
   margin-top: 5%;
     z-index: 2;
     background-color: white;
+    position: relative;
 }
 .left-section{
 display: flex;
@@ -204,5 +205,41 @@ font-size: 0.7rem;
 .policy-and-terms-container{
 margin-top: 30px;
 }
+.visibleError{
+    width: 20%;
+    position: absolute;
+    z-index: 3;
+    top:22%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+}
+.hiddenError{
+    opacity: 0;
+    position: absolute;
+    top:10%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+    width: 20%;
+    z-index: 3;
 
+}
+
+.visibleSuccess{
+    width: 20%;
+    position: absolute;
+    z-index: 3;
+    top:22%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+}
+.hiddenSuccess{
+    opacity: 0;
+    position: absolute;
+    top:10%;
+    left:25%;
+    transition: 0.5s ease-in-out;
+    width: 20%;
+    z-index: 3;
+
+}
 

@@ -1,15 +1,43 @@
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useEffect } from "react";
 import "./AdminLogin.css";
-import { useState } from "react";
+import Exporting from "@/CONFIG";
+import { useContexts } from "@/Context/context";
+import AlertError from "@/element/AlertError/AlertError";
+import AlertSuccess from "@/element/AlertSuccess/AlertSuccess";
+let { Errors } = Exporting;
 
 function AdminLogin() {
   interface FormUser {
     email: string;
     password: string;
   }
+  let { isError, SetIsError, isSuccess, SetIsSuccess, post, StoreToken } =
+    useContexts();
+  useEffect(() => {
+    if (isError && isError != "") {
+      setTimeout(() => {
+        SetIsError("");
+      }, 3000);
+    }
+    if (isSuccess && isSuccess != "") {
+      setTimeout(() => {
+        SetIsSuccess("");
+      }, 3000);
+    }
+  }, [isError, isSuccess]);
+
   let { handleSubmit, register } = useForm<FormUser>();
-  const OnSubmit: SubmitHandler<FormUser> = (data) => {
-    console.log(data);
+  const OnSubmit: SubmitHandler<FormUser> = async (data) => {
+    let res = await post(data, "login-admin");
+    if (res && typeof res != "string" && res.message && !res.token) {
+      SetIsError(Errors[`${res.message}`]);
+    }
+    if (res && typeof res != "string" && res.token && res.message) {
+      StoreToken(res.token);
+      SetIsSuccess(res.message);
+      //set the render to the dashboard
+    }
   };
   return (
     <div id="login-container">
@@ -80,7 +108,7 @@ function AdminLogin() {
                 </div>
                 <div className="login-options">
                   <span className="login-option-text">
-                    You don't have an account?{" "}
+                    You don't have an account?
                   </span>
                   <a className="login-option-link" href="/admin/register">
                     So Register
@@ -90,6 +118,27 @@ function AdminLogin() {
             </div>
           </form>
         </div>
+      </div>
+      <div className="handeling-success-and-errors">
+        {isError && isError != "" ? (
+          <div className="Error-handeling visibleError">
+            <AlertError message={isError} />
+          </div>
+        ) : (
+          <div className="Error-handeling hiddenError">
+            <AlertError message="" />
+          </div>
+        )}
+
+        {isSuccess && isSuccess != "" ? (
+          <div className="Succes-handeling visibleSuccess">
+            <AlertSuccess message={isSuccess} />
+          </div>
+        ) : (
+          <div className="Succes-handeling hiddenSuccess">
+            <AlertSuccess message="" />
+          </div>
+        )}
       </div>
     </div>
   );
