@@ -1,0 +1,18 @@
+.basic-button{
+  height:40px;
+  width:100px;
+  border-radius: 10px;
+
+}
+.write-bold-restaurant{
+    width: 270px;
+    display: flex;
+    text-overflow: ellipsis;
+}
+.basic-button:hover{
+    height:40px;
+    width:100px;
+    border-radius: 10px;
+    opacity: 0.5;
+    
+  }
