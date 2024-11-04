@@ -1,0 +1,149 @@
+.emoji-heart-others-container{
+    display: flex;
+    gap:10px
+}
+.container{
+    margin: 0 auto;
+}
+.unique-page-top-part{
+ position: relative;
+ 
+}
+.unique-page-top-part-image{
+    object-fit: cover;
+    margin: 10px 15%;
+  height:400px;
+  width: 70%;  
+ border-radius: 15px;
+
+}
+.big-image-emojis{
+    background: rgb(248 250 252);
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 2%;
+    right:17%;
+}
+.heart-emoji{
+    right:21%; 
+}
+.unique-page-top-part-title{
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: bold;
+    font-size: 30px;
+    color: rgb(109 40 217);
+    margin-left: 22%;
+}
+.unique-page-rating-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1%;
+    font-size: 16px;
+}
+.unique-page-adress{
+     transform: translateY(1px);
+}
+.unique-page-rating-text{
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    transform: translateY(1px);
+}
+.unique-page-middle-part{
+ 
+ 
+}
+.categories-conatianer{
+    margin-top: 50px;
+   
+    margin-bottom:  80px;
+}
+.catergories-conatiner-title {
+    
+        font-family: "Poppins", serif;
+        font-weight: 600;
+        font-style: normal;
+      font-size: 30px;
+      margin-top: 10px;
+      margin-bottom: 30px;
+      margin-left:30px;
+}
+.smalest-title-for-rating-and-adress{
+    display: inline-block;
+}
+.unique-page-adress{
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    color: rgb(109 40 217);
+    font-size: 14px;
+}
+       
+.smalest-title-for-rating-and-adress{
+    display: flex;
+    align-items: center;
+    gap:10px;
+    margin-left: 22%
+
+}
+.loading-component{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25%;
+}
+.loading-image{
+    height: 120.6px;
+    width: 400px;
+    object-fit: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   position: absolute;
+   right: 50%;
+   top: 25%;
+   transform:translateX(50%);
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid rgb(109 40 217);
+    border-radius: 50%;
+
+    box-sizing: border-box;
+    position: relative;
+    animation: pulse 1s linear infinite;
+   
+  }
+  .loader:after {
+    content: '';
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border: 5px solid rgb(109 40 217);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: scaleUp 1s linear infinite;
+ 
+  }
+  
+  @keyframes scaleUp {
+    0% { transform: translate(-50%, -50%) scale(0) }
+    60% , 100% { transform: translate(-50%, -50%)  scale(1)}
+  }
+  @keyframes pulse {
+    0% , 60% , 100%{ transform:  scale(1) }
+    80% { transform:  scale(1.2)}
+  }

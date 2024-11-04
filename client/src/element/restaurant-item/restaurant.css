@@ -2,15 +2,16 @@
     display: grid;
     grid-template-rows:60% 20% 20% ;
     background-color:#FFFFFF;
-    height: 450px;
+    height: 470px;
     width: 300px;
      /* for clicked component */
     /* border: 0.5px solid  #380150; */
     border-radius: 20px;
-    margin-left: 5%;
-    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
-    
+    margin: 2% auto;
+    box-shadow: 0px 10px 39px -9px rgba(0,0,0,0.1);
+    cursor: pointer;
 }
+
 .speciality{
     font-family: "Poppins", sans-serif;
   font-weight: 100;
@@ -19,19 +20,32 @@
   margin:0 10px;
   color:#380150;
 }
-.availablity{
+.availablity-open{
     display: flex;
     align-items: center;
-    gap:2%;
+    gap:1%;
     font-size:15px;
     background-color:  rgb(220 252 231);
     border-radius:15px;
-    padding: 0 4px;
-   margin: 3px 7px;
-    width:90px;
+    padding: 0 5px;
+    margin:5px 0 0 5px;
+    width:60px;
   
 }
-.green-circle{
+.availablity-closed{
+    display: flex;
+    align-items: center;
+    gap:1%;
+    font-size:15px;
+    background-color: rgb(254 202 202);
+    border-radius:15px;
+    padding: 0 5px;
+    margin:5px 0 0 5px;
+    width:70px;
+
+}
+
+.red-circle-closed{
     height:10px;
     width: 10px;
     border-radius: 50%;
@@ -39,7 +53,18 @@
     align-items: center;
     margin: auto;
 }
-.status{
+.green-circle-open{
+    height:10px;
+    width: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    margin: auto;
+}
+.status-closed{
+    margin:auto;
+}
+.status-open{
     margin:auto;
 }
 .top-part-restaurant{
@@ -51,6 +76,8 @@
 
   
 }
+
+
 .bottom-part-restaurant{
     width: 270px;
     
@@ -79,6 +106,7 @@ margin: auto;
     font-family: "Poppins", sans-serif;
     font-weight: 700;
     font-style: normal;
+    margin-right: 20px;
     display: flex;
     align-items: center;
     
@@ -107,6 +135,6 @@ margin: auto;
     color: rgb(203 213 225);
 }
 .icon-component{
-    font-size: 20px;
+    font-size: 25px;
     color: rgb(203 213 225);
 }

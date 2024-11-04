@@ -1,0 +1,38 @@
+.home-holder{
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+
+}
+
+.home-holder-categories-title{
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 30px;
+    margin-left: 3%;
+    color:#380150;
+}
+.home-holder-restaurant-title{
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 32px;
+    margin-left: 3%;
+    color:#380150;
+
+}
+.home-holder-categories-container{
+    display: flex;
+    gap: 3%;
+    margin: 10px 30px;
+}
+.home-holder-middle-part{
+    margin-top: 5%;
+}
+.home-middle-part{
+    display: flex;
+    flex-wrap:wrap;
+}
+.home-bottom-part{
+    margin: 20px auto;
+}

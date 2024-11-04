@@ -20,10 +20,65 @@ type flag =
   | "update-admin"
   | "update-login";
 
+type flagTypeGetArrayElements = "get-shop-details" | "get-shops";
+type flagTypeGetUniqueElement = "get-unique-shop-details";
+
 //typing context variables
+//categories variables
+type FoodElemnt = {
+  n: string;
+  _id: string;
+  v: number;
+  ct: string;
+  o: number;
+  i: string;
+  p: number;
+};
+interface CategoriesType {
+  l: FoodElemnt[];
+  _id: string;
+  n: string;
+  i: string;
+  o: Number;
+}
 interface RecivedData {
-  message?: string;
-  token?: string;
+  message?: string | void;
+  token?: string | void;
+}
+interface data {
+  message?: string | void;
+  data?: Array<items> | void;
+}
+interface dataUnique {
+  message?: string | void;
+  data?: itemsUniqueShop | void;
+}
+interface items {
+  ct: CategoriesType[];
+  n: string;
+  op: object[];
+  cu: string[];
+  t: number;
+  busy: boolean;
+  rv: number;
+  se: any;
+  sc: any;
+  nm: string;
+  ad: string;
+  cc: string;
+  loc: object;
+  rd: number;
+  rt: number;
+  ofr: number;
+  cs: number;
+}
+
+interface itemsUniqueShop {
+  ct: CategoriesType[];
+  n: string;
+  ad: string;
+  rt: number;
+  i: string;
 }
 
 interface VariablesAndFunctions {
@@ -31,12 +86,25 @@ interface VariablesAndFunctions {
     data: object,
     flag: flag
   ) => Promise<Promise<void | string | RecivedData>>;
+  getArrayElements: (
+    flag: flagTypeGetArrayElements,
+    id?: string
+  ) => Promise<Promise<void | string | data>>;
+  getUniqueElement: (
+    flag: flagTypeGetUniqueElement,
+    id?: string
+  ) => Promise<dataUnique | void | string>;
   StoreToken: (Token: string) => void;
   isError: string;
   isSuccess: string;
+  isLoading: boolean;
+  isCartOpen: boolean;
   ClearMessages: () => void;
   SetIsError: Dispatch<SetStateAction<string>>;
   SetIsSuccess: Dispatch<SetStateAction<string>>;
+  SetIsLoading: Dispatch<SetStateAction<boolean>>;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  Categories: object[];
 }
 
 const Context = createContext<VariablesAndFunctions | undefined>(undefined);
@@ -58,16 +126,46 @@ function ContextProvider({ children }: ContextProviderProps) {
   let URI = env.VITE_APP_HOST || env.VITE_APP_LOCAL;
   let [isError, SetIsError] = useState("");
   let [isSuccess, SetIsSuccess] = useState("");
+  let [isLoading, SetIsLoading] = useState(false);
+  let [isCartOpen, setIsOpen] = useState(true);
+  //categories
+  let Categories = [
+    {
+      path: "/burger.png",
+      text: "Burger",
+    },
+    {
+      path: "/pizza.png",
+      text: "Pizza",
+    },
+    {
+      path: "/breakfast.png",
+      text: "Breakfast",
+    },
+    {
+      path: "/barbecue.png",
+      text: "BBQ",
+    },
+    {
+      path: "/croissant.png",
+      text: "Pastry",
+    },
+    {
+      path: "/drink.png",
+      text: "Drinks",
+    },
+  ];
   //async functions
   // posting data function
   const post = async (
     data: object,
     flag: flag
-  ): Promise<Promise<void | string | RecivedData>> => {
+  ): Promise<Promise<void | string | void | RecivedData>> => {
     switch (flag) {
       //admin login requeest
       case "login-admin":
         try {
+          SetIsLoading(true);
           const pending = await axios.post<RecivedData>(
             URI + "admin/login",
             data
@@ -109,8 +207,8 @@ function ContextProvider({ children }: ContextProviderProps) {
       case "register-admin":
         try {
           interface RecivedData {
-            message: string;
-            token: string;
+            message: string | void;
+            token: string | void;
           }
           const pending = await axios.post<RecivedData>(
             URI + "admin/new",
@@ -134,8 +232,8 @@ function ContextProvider({ children }: ContextProviderProps) {
       case "register-public":
         try {
           interface RecivedData {
-            message: string;
-            token: string;
+            message: string | void;
+            token: string | void;
           }
           const pending = await axios.post<RecivedData>(
             URI + "admin/new",
@@ -156,6 +254,73 @@ function ContextProvider({ children }: ContextProviderProps) {
         break;
     }
   };
+
+  //getting data function and deleting function
+  //typing flag
+  //getting an arrays data
+  const getArrayElements = async (
+    flag: flagTypeGetArrayElements,
+    id?: string
+  ): Promise<Promise<void | string | data>> => {
+    switch (flag) {
+      case "get-shop-details":
+        try {
+          SetIsLoading(true);
+          const pending = await axios.get<data>(URI + "shop/shops-details");
+          if (!pending) {
+            SetIsLoading(false);
+            return alert("didn't recived the data check your code");
+          }
+          if (pending.data.message == "success") {
+            SetIsLoading(false);
+            return pending.data;
+          }
+          if (pending.data.message && pending.data.message.includes("error")) {
+            SetIsLoading(false);
+            return pending.data.message;
+          }
+          return "intern server error";
+        } catch (error) {
+          throw error;
+        }
+
+        return;
+    }
+  };
+  //getting an unique data
+  const getUniqueElement = async (
+    flag: flagTypeGetUniqueElement,
+    id?: string
+  ) => {
+    switch (flag) {
+      case "get-unique-shop-details":
+        try {
+          if (!id) {
+            return "need the id to do this operation";
+          }
+          SetIsLoading(true);
+          const pending = await axios.get<dataUnique>(
+            URI + `shop/unique/${id}`
+          );
+
+          if (!pending) {
+            // SetIsLoading(false)
+            return alert("didn't recived the data check your code");
+          }
+          if (pending && pending.data.message == "success") {
+            // SetIsLoading(false)
+            return pending.data;
+          }
+          if (pending && pending.data.message?.includes("error")) {
+            // SetIsLoading(false)
+            return pending.data.message;
+          }
+        } catch (error) {
+          throw error;
+        }
+    }
+  };
+
   //normal functions
   //storing a token in the local storage
   function StoreToken(Token: string) {
@@ -164,12 +329,19 @@ function ContextProvider({ children }: ContextProviderProps) {
 
   const value: VariablesAndFunctions = {
     post,
+    getArrayElements,
+    getUniqueElement,
     StoreToken,
     isError,
     isSuccess,
+    isLoading,
+    Categories,
+    isCartOpen,
     ClearMessages,
     SetIsError,
     SetIsSuccess,
+    SetIsLoading,
+    setIsOpen,
   };
   //clearing the states that carry the error and success state messages
   function ClearMessages() {

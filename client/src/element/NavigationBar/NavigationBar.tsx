@@ -1,48 +1,24 @@
 import "./NavigationBar.css";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
 
 function NavigationBar() {
   return (
     <>
-      <Menubar>
-        <MenubarMenu>
-          <MenubarTrigger>File</MenubarTrigger>
-          <MenubarContent>
-            <MenubarItem>
-              New Tab <MenubarShortcut>⌘T</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem>New Window</MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem>Share</MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem>Print</MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger className="nav-bar-bar-item-container">
-            <i
-              className="fa-solid fa-chart-simple"
-              style={{ color: "#000000" }}
-            ></i>
-            <div>Sales</div>
-          </MenubarTrigger>
-          <MenubarContent>
-            <MenubarItem>
-              month Sales
-              <MenubarShortcut>⌘Y</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem>week sales</MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
+      <div className="navbar-container">
+        <div className="left-part">
+          <div className="items-in-left logo ">
+            <img
+              src="../../../images/imageSvg.svg"
+              alt=""
+              style={{ height: "50px", width: "60px" }}
+            />
+          </div>
+        </div>
+        <div className="right-part">
+          <div className="items-in-right">about us</div>
+          <div className="items-in-right"> Contact us</div>
+          <div className="items-in-right">Services</div>
+        </div>
+      </div>
     </>
   );
 }

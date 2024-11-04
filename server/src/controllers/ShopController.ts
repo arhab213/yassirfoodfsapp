@@ -1,7 +1,10 @@
 import { Response, Request, NextFunction } from "express";
 import query from "../Aggregations/shopQueury.js";
+import ItemQuery from "../Aggregations/RestaurantItem.js";
 import ServerParameters from "../functions.js";
 import { ObjectId } from "mongodb";
+import getUniqueDetailsShopQuery from "../Aggregations/get-unique-shop-details.js";
+
 // ServerParameters
 let {
   isUndifinedObjectId,
@@ -22,24 +25,45 @@ export async function GetAllShops(req: Request, res: Response) {
     throw error;
   }
 }
+//get details of the shop
+export async function GetDetails(req: Request, res: Response) {
+  try {
+    const importingDetails = await restaurants.aggregate(ItemQuery).toArray();
+    if (!importingDetails) {
+      return res.json({ message: "error 19" });
+    }
+    return res.json({ message: "success", data: importingDetails });
+  } catch (error) {
+    throw error;
+  }
+}
 
 //get unique shop
 export async function GetUnique(req: Request, res: Response) {
   try {
     let { params, headers } = req;
-    const id: any = params.id;
+    const id: string = params.id;
 
-    const FindOne = await restaurants.findOne({ _id: id });
+    let MatchStage = [
+      {
+        $match: {
+          _id: id,
+        },
+      },
+    ];
+    const TheCompleteQuery = MatchStage.concat(getUniqueDetailsShopQuery);
+
+    const FindOne = await restaurants.aggregate(TheCompleteQuery).toArray();
+
     if (!FindOne) {
       return res.json({ message: "error 17" });
     }
-    return res.json({ message: "success", data: FindOne });
+    return res.json({ message: "success", data: FindOne[0] });
   } catch (error) {
     throw error;
   }
 }
 // add shop
-
 export async function addshop(req: Request, res: Response) {
   try {
     let { body } = req;

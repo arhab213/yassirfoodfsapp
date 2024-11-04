@@ -62,3 +62,21 @@
     @apply bg-background text-foreground;
   }
 }
+.slick-slide:first-child{
+ padding: 10px;
+
+}
+.slick-arrow::before{
+  color: rgb(109 40 217);
+  font-size: 50px;
+  
+}
+.slick-prev{
+  margin-right: 50px;
+}
+.slick-prev,.slick-next{
+
+}
+.slick-next{
+  margin-right: 20px;
+}

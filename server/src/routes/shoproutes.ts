@@ -9,6 +9,7 @@ import {
   GetAllShops,
   GetUnique,
   GetCategories,
+  GetDetails,
 } from "../controllers/ShopController.js";
 import { auth } from "../middleware/auth.js";
 import { AdminAuth } from "../middleware/authAdmin.js";
@@ -17,10 +18,10 @@ import { AdminAuth } from "../middleware/authAdmin.js";
 const shoprouter = express.Router();
 // get all shops
 shoprouter.get("/shops", GetAllShops);
+//getting details of the restaurants in a unique shop
+shoprouter.get("/shops-details", GetDetails);
 // get unique shop for public user
-shoprouter.get("/shopP/:id", auth, GetUnique);
-// get unique shop for admin user
-shoprouter.get("/shopA/:id", AdminAuth, GetUnique);
+shoprouter.get("/unique/:id", GetUnique);
 //get categories of the shop for public user
 shoprouter.get("/shopP/categories/:id", auth, GetCategories);
 //get categories of the shop for admin user

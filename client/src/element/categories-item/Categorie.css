@@ -1,0 +1,17 @@
+.categorie-item-container{
+    display: flex;
+    gap: 10%;
+    padding: 7px;
+    align-items: center;
+    border-radius: 15px;
+    height: 70px;
+    width: 150px;
+    margin: 10px 0;
+}
+.categorie-item-container:hover{
+   cursor: pointer;
+}
+.categorie-item-text{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+}

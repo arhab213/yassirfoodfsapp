@@ -1,0 +1,48 @@
+.element-in-slider-container{
+display: grid;
+grid-template-rows:70% 10% 20%;
+background-color: white;
+box-shadow: 0px 10px 39px -9px rgba(0,0,0,0.1);
+
+height: 350px;
+width:250px;
+border-radius: 20px;
+margin-left: 10%;
+}
+.element-in-slider-image{
+    object-fit:contain;
+    height:200px;
+    width:200px;
+    display: flex;
+    align-items: center;
+    margin: 20px auto;
+}
+.element-in-slider-big-title{
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.element-in-slider-price{
+display: flex;
+align-items: center;
+font-family: "Poppins", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+    gap: 2%;
+}
+.element-in-slider-container-middle-part{
+    margin-left:21px;
+    display:inline-block;
+    
+}
+.element-in-slider-cart-emoji{
+
+    background-color: rgb(241 245 249);
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 70%;
+}

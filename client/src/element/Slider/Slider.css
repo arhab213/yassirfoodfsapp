@@ -1,0 +1,7 @@
+.custom-prevArrow,
+.custom-nextArrow {
+    background-color: rgb(109 40 217);
+  position: relative;
+  z-index: 99999;
+  top: -10px;
+}

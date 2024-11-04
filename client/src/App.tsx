@@ -4,7 +4,8 @@ import AdminRegistration from "./Regestration/Admin/AdminRegistration";
 import AdminLogin from "./Login/Admin/AdminLogin";
 import Dashboard from "./Dashboard/Dashboard";
 import Home from "./Home/Home";
-import RouterProtection from "./Router/RouterProtection";
+import Uniquepage from "./element/Uniquepage/Uniquepage";
+
 function App() {
   //routes and sub routes
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
         </Route>
         <Route element={<Home />} path="/" />
+        <Route element={<Uniquepage />} path="/unique/:id" />
 
         {/*PROTECTED ROUTE*/}
       </Routes>

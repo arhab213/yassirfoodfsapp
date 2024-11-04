@@ -15,7 +15,7 @@ const Errors: ErrorsType = {
   "error 9": "need to fill required fields of user ",
   "error 10": "failed to update user",
   "error 11": "failed to delete user",
-  "error 12": "user doesn't exist or password is inccorect",
+  "error 12": "user not found or password is inccorect",
   "error 13": "failed to create a token",
   "error 14": "redirect to login for new token",
   "error 15": "redicrect to register",
@@ -23,6 +23,7 @@ const Errors: ErrorsType = {
     "this email have been already used if you have an account please login",
   "error 17": "the shop that you search doesn't exist",
   "error 18": "change the field that you want to update it is already used",
+  "error 19": "error on importing restaurants details",
 };
 
 let Exporting = {
