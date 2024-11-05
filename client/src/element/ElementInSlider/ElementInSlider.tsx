@@ -5,20 +5,35 @@ import ImageComponent from "../imageComponent/imageComponent";
 
 interface propsType {
   myValue: {
-    n?: string;
-    p?: Number;
-    i?: string;
+    n: string;
+    p: number;
+    i: string;
   };
 }
-
+interface itemsInCartArray {
+  n: string;
+  p: number;
+  qte: number;
+}
+const CheckIfIsDefined = (argument: itemsInCartArray | undefined) => {
+  if (
+    argument &&
+    argument.n &&
+    argument.p &&
+    argument.p > 0 &&
+    argument.n.length > 2
+  ) {
+    return true;
+  }
+  return false;
+};
 function ElementInSlider(props: propsType) {
   let DefaultImage = "/itemBackground.webp";
 
   let [src, setSrc] = useState("");
-  let { isLoading } = useContexts();
+  let { isLoading, AddToCart } = useContexts();
   let { myValue } = props;
   let { n, i, p } = myValue;
-
   const handleimage = () => {
     return setSrc(DefaultImage);
   };
@@ -46,7 +61,12 @@ function ElementInSlider(props: propsType) {
         </div>
       </div>
       <div className="element-in-slider-container-middle-part">
-        <div className="element-in-slider-cart-emoji">
+        <div
+          className="element-in-slider-cart-emoji"
+          onClick={() => {
+            AddToCart({ n: n, p: p, qte: 1 });
+          }}
+        >
           <img
             src="/plus.png"
             style={{ height: "20px", width: "20px", cursor: "pointer" }}

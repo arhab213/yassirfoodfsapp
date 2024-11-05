@@ -36,6 +36,7 @@ function Uniquepage() {
     rt: number;
     i: string;
   }
+
   //defining the settiings of the slider
 
   let [ShopDetails, setShopDetails] = useState<items | null>({

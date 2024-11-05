@@ -1,6 +1,14 @@
 import axios from "axios";
-import { useContext, createContext, ReactNode, useState } from "react";
+import {
+  useContext,
+  createContext,
+  ReactNode,
+  useState,
+  useEffect,
+  ChangeEvent,
+} from "react";
 import Exporting from "../CONFIG";
+import { ChangeEventHandler } from "react";
 let { env } = Exporting;
 import { SetStateAction, Dispatch } from "react";
 //verifcation of some variables that comes from dot env
@@ -82,6 +90,14 @@ interface itemsUniqueShop {
 }
 
 interface VariablesAndFunctions {
+  AddToCart: (
+    argument: itemsInCartArray
+  ) => void | React.MutableRefObject<null>;
+  DeleteFromCart: (argument: string) => void;
+  Change: (
+    element: React.MutableRefObject<Record<string, HTMLInputElement | null>>,
+    name: string
+  ) => void;
   post: (
     data: object,
     flag: flag
@@ -99,11 +115,16 @@ interface VariablesAndFunctions {
   isSuccess: string;
   isLoading: boolean;
   isCartOpen: boolean;
+  total: number;
+  CartElement: itemsInCartArray[] | undefined;
   ClearMessages: () => void;
+  Total: () => void;
   SetIsError: Dispatch<SetStateAction<string>>;
+  setTotal: Dispatch<SetStateAction<number>>;
   SetIsSuccess: Dispatch<SetStateAction<string>>;
   SetIsLoading: Dispatch<SetStateAction<boolean>>;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  setCartelment: Dispatch<SetStateAction<itemsInCartArray[] | undefined>>;
   Categories: object[];
 }
 
@@ -120,7 +141,11 @@ export const useContexts = () => {
 interface ContextProviderProps {
   children: ReactNode;
 }
-
+interface itemsInCartArray {
+  n: string;
+  p: number;
+  qte: number;
+}
 function ContextProvider({ children }: ContextProviderProps) {
   //variables
   let URI = env.VITE_APP_HOST || env.VITE_APP_LOCAL;
@@ -128,6 +153,10 @@ function ContextProvider({ children }: ContextProviderProps) {
   let [isSuccess, SetIsSuccess] = useState("");
   let [isLoading, SetIsLoading] = useState(false);
   let [isCartOpen, setIsOpen] = useState(true);
+  let [CartElement, setCartelment] = useState<itemsInCartArray[]>();
+  let [total, setTotal] = useState<number>(0);
+  console.log(CartElement);
+
   //categories
   let Categories = [
     {
@@ -155,6 +184,9 @@ function ContextProvider({ children }: ContextProviderProps) {
       text: "Drinks",
     },
   ];
+  useEffect(() => {
+    Total();
+  }, [CartElement]);
   //async functions
   // posting data function
   const post = async (
@@ -326,20 +358,79 @@ function ContextProvider({ children }: ContextProviderProps) {
   function StoreToken(Token: string) {
     window.localStorage.setItem("token", Token);
   }
+  //adding item in  cart array
+  const AddToCart = (argument: itemsInCartArray): void => {
+    let tmp = CartElement ? [...CartElement] : [];
+    for (let element of tmp) {
+      if (element.n == argument.n) {
+        return;
+      }
+      continue;
+    }
+    if (argument.n.length > 1 && argument.p > 0 && argument.qte >= 1) {
+      setCartelment([...tmp, argument]);
+      Total();
+      return;
+    }
+    return alert("there is an error in the AddToCart");
+  };
+  const DeleteFromCart = (argument: string) => {
+    let tmp = CartElement ? [...CartElement] : [];
+    tmp = tmp.filter((e) => e.n != argument);
+
+    setCartelment(tmp);
+    Total();
+    return;
+  };
+  //total item calculating
+  const Total = () => {
+    let total = 0;
+    if (CartElement) {
+      CartElement.map((e) => {
+        total += e.p * e.qte;
+      });
+      setTotal(total);
+    }
+  };
+  //onChange function
+  const Change = (
+    element: React.MutableRefObject<Record<string, HTMLInputElement | null>>,
+    name: string
+  ) => {
+    let refelem = element.current ? element.current[name] : null;
+    let tmp = CartElement ? [...CartElement] : [];
+    if (refelem) {
+      tmp.forEach((ele) => {
+        if (ele.n == name) {
+          ele.qte = parseInt(refelem.value);
+        }
+      });
+      setCartelment(tmp);
+      return;
+    }
+  };
 
   const value: VariablesAndFunctions = {
     post,
     getArrayElements,
     getUniqueElement,
     StoreToken,
+    DeleteFromCart,
+    Total,
+    total,
     isError,
     isSuccess,
     isLoading,
     Categories,
     isCartOpen,
+    CartElement,
+    Change,
+    AddToCart,
     ClearMessages,
+    setTotal,
     SetIsError,
     SetIsSuccess,
+    setCartelment,
     SetIsLoading,
     setIsOpen,
   };
