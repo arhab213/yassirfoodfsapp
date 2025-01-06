@@ -114,6 +114,7 @@ interface VariablesAndFunctions {
   isSuccess: string;
   isLoading: boolean;
   isCartOpen: boolean;
+  set: string;
   total: number;
   CartElement: itemsInCartArray[] | undefined;
   ClearMessages: () => void;
@@ -122,6 +123,7 @@ interface VariablesAndFunctions {
   setTotal: Dispatch<SetStateAction<number>>;
   SetIsSuccess: Dispatch<SetStateAction<string>>;
   SetIsLoading: Dispatch<SetStateAction<boolean>>;
+  setSrc: Dispatch<SetStateAction<string>>;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   setCartelment: Dispatch<SetStateAction<itemsInCartArray[] | undefined>>;
   Categories: object[];
@@ -152,6 +154,7 @@ function ContextProvider({ children }: ContextProviderProps) {
   let [isSuccess, SetIsSuccess] = useState("");
   let [isLoading, SetIsLoading] = useState(false);
   let [isCartOpen, setIsOpen] = useState(false);
+  let [set, setSrc] = useState("");
   let [CartElement, setCartelment] = useState<itemsInCartArray[]>();
   let [total, setTotal] = useState<number>(0);
   console.log(CartElement);
@@ -416,10 +419,12 @@ function ContextProvider({ children }: ContextProviderProps) {
     total,
     isError,
     isSuccess,
+    set,
     isLoading,
     Categories,
     isCartOpen,
     CartElement,
+    setSrc,
     Change,
     AddToCart,
     ClearMessages,

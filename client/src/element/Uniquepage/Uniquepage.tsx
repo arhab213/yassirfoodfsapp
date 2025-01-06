@@ -48,8 +48,7 @@ function Uniquepage() {
   });
 
   let [categories, setCategories] = useState<CategoriesType[]>([]);
-  let { getUniqueElement, isError, isLoading, SetIsLoading, SetIsError } =
-    useContexts();
+  let { getUniqueElement, isLoading, SetIsLoading, SetIsError } = useContexts();
 
   const HandlingRequest = async (id?: string) => {
     try {

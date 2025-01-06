@@ -12,8 +12,7 @@ interface propsType {
 }
 
 function ElementInSlider(props: propsType) {
-  let [set, setSrc] = useState("");
-  let { AddToCart } = useContexts();
+  let { setSrc, AddToCart } = useContexts();
   let { myValue } = props;
   let { n, i, p } = myValue;
 
