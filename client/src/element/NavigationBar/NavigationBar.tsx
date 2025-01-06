@@ -9,7 +9,7 @@ function NavigationBar() {
             <img
               src="/image.png"
               alt=""
-              style={{ height: "50px", width: "60px" }}
+              style={{ height: "50px", width: "50px" }}
             />
           </div>
         </div>
