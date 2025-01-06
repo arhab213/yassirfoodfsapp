@@ -7,7 +7,7 @@ function NavigationBar() {
         <div className="left-part">
           <div className="items-in-left logo ">
             <img
-              src="../../../images/image.png"
+              src="/image.png"
               alt=""
               style={{ height: "50px", width: "60px" }}
             />
