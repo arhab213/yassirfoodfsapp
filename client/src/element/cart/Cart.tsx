@@ -1,17 +1,9 @@
-import { useEffect, useState } from "react";
 import "./Cart.css";
 import { useContexts } from "@/Context/context";
 import { useRef } from "react";
 function Cart() {
-  let {
-    setIsOpen,
-    isCartOpen,
-    CartElement,
-    total,
-    DeleteFromCart,
-    Change,
-    Total,
-  } = useContexts();
+  let { setIsOpen, isCartOpen, CartElement, total, DeleteFromCart, Change } =
+    useContexts();
   let ref = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   return (

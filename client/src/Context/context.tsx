@@ -5,10 +5,9 @@ import {
   ReactNode,
   useState,
   useEffect,
-  ChangeEvent,
 } from "react";
 import Exporting from "../CONFIG";
-import { ChangeEventHandler } from "react";
+
 let { env } = Exporting;
 import { SetStateAction, Dispatch } from "react";
 //verifcation of some variables that comes from dot env
@@ -291,8 +290,7 @@ function ContextProvider({ children }: ContextProviderProps) {
   //typing flag
   //getting an arrays data
   const getArrayElements = async (
-    flag: flagTypeGetArrayElements,
-    id?: string
+    flag: flagTypeGetArrayElements
   ): Promise<Promise<void | string | data>> => {
     switch (flag) {
       case "get-shop-details":
@@ -315,8 +313,6 @@ function ContextProvider({ children }: ContextProviderProps) {
         } catch (error) {
           throw error;
         }
-
-        return;
     }
   };
   //getting an unique data
