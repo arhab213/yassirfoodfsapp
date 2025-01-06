@@ -152,7 +152,7 @@ function ContextProvider({ children }: ContextProviderProps) {
   let [isError, SetIsError] = useState("");
   let [isSuccess, SetIsSuccess] = useState("");
   let [isLoading, SetIsLoading] = useState(false);
-  let [isCartOpen, setIsOpen] = useState(true);
+  let [isCartOpen, setIsOpen] = useState(false);
   let [CartElement, setCartelment] = useState<itemsInCartArray[]>();
   let [total, setTotal] = useState<number>(0);
   console.log(CartElement);
