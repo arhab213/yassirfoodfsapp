@@ -43,11 +43,7 @@ function AdminLogin() {
     <div id="login-container">
       <div className="login-parent">
         <div className="login-left-section">
-          <img
-            className="login-left-part-image"
-            src="../../../images/imageSvg.svg"
-            alt=""
-          />
+          <img className="login-left-part-image" src="/image.svg" alt="" />
         </div>
         <div className="login-right-section">
           <div className=" login-big-title">
