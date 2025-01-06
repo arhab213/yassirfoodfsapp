@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useContexts } from "@/Context/context";
 import "./ElementInSlider.css";
 import ImageComponent from "../imageComponent/ImageComponent";
