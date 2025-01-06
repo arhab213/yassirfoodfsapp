@@ -1,8 +1,7 @@
 import "./restaurant.css";
-import ImageComponent from "../imageComponent/imageComponent";
+import ImageComponent from "../imageComponent/ImageComponent";
 import Button from "../Button/Button";
 import { useNavigate } from "react-router";
-import { useContexts } from "@/Context/context";
 
 interface PropsType {
   myvalue: {
@@ -18,7 +17,6 @@ interface PropsType {
 function Restaurant(props: PropsType) {
   let { myvalue } = props;
   let { a, ra, ro, n, i, _id } = myvalue;
-  let { isLoading } = useContexts();
   let navigate = useNavigate();
   return (
     <>

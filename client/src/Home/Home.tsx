@@ -7,8 +7,7 @@ import Categorie from "@/element/categories-item/Categorie";
 import { useContexts } from "@/Context/context";
 import Cart from "@/element/cart/Cart";
 function Home() {
-  let { getArrayElements, SetIsError, Categories, isError, isLoading } =
-    useContexts();
+  let { getArrayElements, SetIsError, Categories, isLoading } = useContexts();
   //typing the shopItems
   interface items {
     ct?: Array<object>;

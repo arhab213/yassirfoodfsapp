@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useContexts } from "@/Context/context";
 import "./ElementInSlider.css";
-import ImageComponent from "../imageComponent/imageComponent";
+import ImageComponent from "../imageComponent/ImageComponent";
 
 interface propsType {
   myValue: {
@@ -10,33 +10,13 @@ interface propsType {
     i: string;
   };
 }
-interface itemsInCartArray {
-  n: string;
-  p: number;
-  qte: number;
-}
-const CheckIfIsDefined = (argument: itemsInCartArray | undefined) => {
-  if (
-    argument &&
-    argument.n &&
-    argument.p &&
-    argument.p > 0 &&
-    argument.n.length > 2
-  ) {
-    return true;
-  }
-  return false;
-};
-function ElementInSlider(props: propsType) {
-  let DefaultImage = "/itemBackground.webp";
 
-  let [src, setSrc] = useState("");
-  let { isLoading, AddToCart } = useContexts();
+function ElementInSlider(props: propsType) {
+  let [set, setSrc] = useState("");
+  let { AddToCart } = useContexts();
   let { myValue } = props;
   let { n, i, p } = myValue;
-  const handleimage = () => {
-    return setSrc(DefaultImage);
-  };
+
   useEffect(() => {
     setSrc("https://food.yassir.io/" + i);
   }, [myValue]);
