@@ -149,7 +149,7 @@ interface itemsInCartArray {
 }
 function ContextProvider({ children }: ContextProviderProps) {
   //variables
-  let URI = env.VITE_APP_HOST || env.VITE_APP_LOCAL;
+  let URI = env.VITE_APP_LOCAL;
   let [isError, SetIsError] = useState("");
   let [isSuccess, SetIsSuccess] = useState("");
   let [isLoading, SetIsLoading] = useState(false);
@@ -339,6 +339,7 @@ function ContextProvider({ children }: ContextProviderProps) {
             return alert("didn't recived the data check your code");
           }
           if (pending && pending.data.message == "success") {
+            console.log(pending);
             // SetIsLoading(false)
             return pending.data;
           }
