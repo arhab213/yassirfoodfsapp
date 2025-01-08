@@ -339,7 +339,7 @@ function ContextProvider({ children }: ContextProviderProps) {
             return alert("didn't recived the data check your code");
           }
           if (pending && pending.data.message == "success") {
-            console.log(pending);
+            console.log("fetching error " + pending);
             // SetIsLoading(false)
             return pending.data;
           }
